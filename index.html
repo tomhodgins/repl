@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width, initial-scale=1">
+<title>Web REPL</title>
+
+<textarea accesskey=h id=html placeholder=HTML autocapitalize=off autocorrect=off></textarea>
+<textarea accesskey=c id=css placeholder=CSS autocapitalize=off autocorrect=off></textarea>
+<textarea accesskey=j id=js placeholder=JavaScript autocapitalize=off autocorrect=off></textarea>
+
+<iframe></iframe>
+
+<script>
+  var textarea = document.querySelectorAll('textarea')
+  var html = document.querySelector('#html')
+  var css = document.querySelector('#css')
+  var js = document.querySelector('#js')
+  var iframe = document.querySelector('iframe')
+
+  window.addEventListener('load', e => {
+
+    html.value = localStorage.html ? localStorage.html : ''
+    css.value = localStorage.css ? localStorage.css : ''
+    js.value = localStorage.js ? localStorage.js : ''
+
+    autoHeight(html)
+    autoHeight(css)
+    autoHeight(js)
+
+    return preview()
+
+  })
+
+  textarea.forEach(tag => {
+
+    return tag.addEventListener('input', e => {
+
+      localStorage[tag.id] = tag.value
+
+      autoHeight(tag)
+
+      preview()
+
+    })
+
+  })
+
+  function preview() {
+
+    return iframe.srcdoc = `
+      ${html.value}
+      <script>${js.value}<\/script>
+      <style>${css.value}</style>
+    `
+
+  }
+
+  function autoHeight(tag) {
+
+    tag.style.height = 'auto'
+
+    return tag.style.height =
+      getComputedStyle(tag).getPropertyValue('borderTop')
+       + getComputedStyle(tag).getPropertyValue('paddingTop')
+       + tag.scrollHeight
+       + getComputedStyle(tag).getPropertyValue('paddingBottom')
+       + getComputedStyle(tag).getPropertyValue('borderBottom') + 'px'
+
+  }
+</script>
+
+
+<style>
+  * {
+    box-sizing: border-box;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-kerning: auto;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    margin: 0;
+  }
+  textarea {
+    margin: 0;
+    width: 100%;
+    border: 0;
+    font-family: 'Fira Code', monospace;
+    font-size: 12pt;
+    line-height: 1.5;
+    padding: 1em;
+  }
+  #html { background: #fef; }
+  #css { background: #eff; }
+  #js { background: #ffe; }
+  iframe {
+    width: 100%;
+    height: 100vh;
+    border: none;
+  }
+</style>
+
+<script>
+  window.addEventListener('keydown', e => {
+
+    var charCode = typeof e.which == 'number' ? e.which : e.keyCode
+
+    if (charCode == 9) {
+
+      e.preventDefault()
+      var active = document.activeElement
+      var position = active.selectionStart
+      active.value = active.value.substring(0, position)
+                     + '  '
+                     + active.value.substring(position, active.value.length)
+
+      active.setSelectionRange(position + 2, position + 2)
+
+    }
+
+  })
+</script>
