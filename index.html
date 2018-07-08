@@ -96,15 +96,15 @@
 
   window.addEventListener('load', e => {
 
-    if (location.hash) {
+    if (location.search) {
 
-      const regex = new RegExp(/^.*#html=(.*)css=(.*)js=(.*)$/)
-      const markup = decode(location.hash.replace(regex, '$1'))
+      const params = new URLSearchParams(location.search)
+      const markup = decode(params.get('html'))
         .replace(/&lt;/g,'<')
         .replace(/&gt;/g,'>')
         .replace(/&amp;/g,'&')
-      const styles = decode(location.hash.replace(regex, '$2'))
-      const scripts = decode(location.hash.replace(regex, '$3'))
+      const styles = decode(params.get('css'))
+      const scripts = decode(params.get('js'))
 
       html.value = markup
       css.value = styles
@@ -165,13 +165,7 @@
 
   function preview() {
 
-    share.href = `#html=${
-      encode(html.value)
-    }css=${
-      encode(css.value)
-    }js=${
-      encode(js.value)
-    }`
+    share.href = `?html=${encode(html.value)}&css=${encode(css.value)}&js=${encode(js.value)}`
 
     return iframe.srcdoc = `
       ${html.value}
