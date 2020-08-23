@@ -62,42 +62,14 @@
   }
 </style>
 
-<textarea
-  id=html
-  accesskey=h
-  placeholder=HTML
-  autocapitalize=off
-  autocorrect=off></textarea>
-
-<textarea
-  id=css
-  accesskey=c
-  placeholder=CSS
-  autocapitalize=off
-  autocorrect=off></textarea>
-
-<textarea
-  id=js
-  accesskey=j
-  placeholder=JavaScript
-  autocapitalize=off
-  autocorrect=off></textarea>
-
-<iframe></iframe>
-
-<a id=share href=# target=_blank>Share</a>
-
-<script>
-  const textarea = document.querySelectorAll('textarea')
+<script type=module>
   const html = document.querySelector('#html')
   const css = document.querySelector('#css')
   const js = document.querySelector('#js')
   const iframe = document.querySelector('iframe')
 
-  window.addEventListener('load', e => {
-
+  window.addEventListener('load', event => {
     if (location.search) {
-
       const params = new URLSearchParams(location.search)
       const markup = decode(params.get('html'))
         .replace(/&lt;/g,'<')
@@ -109,13 +81,10 @@
       html.value = markup
       css.value = styles
       js.value = scripts
-
     } else {
-
-      html.value = localStorage.html ? localStorage.html : ''
-      css.value = localStorage.css ? localStorage.css : ''
-      js.value = localStorage.js ? localStorage.js : ''
-
+      html.value = localStorage.html ?? ''
+      css.value = localStorage.css ?? ''
+      js.value = localStorage.js ?? ''
     }
 
     autoHeight(html)
@@ -123,48 +92,41 @@
     autoHeight(js)
 
     return preview()
-
   })
 
-  window.addEventListener('keydown', e => {
-
+  window.addEventListener('keydown', event => {
     const share = document.querySelector('#share')
-    const charCode = typeof e.which == 'number'
-                     ? e.which
-                     : e.keyCode
+    const charCode = event[
+      typeof event.which == 'number'
+        ? 'which'
+        : 'keyCode'
+    ]
 
     // Tab key adds 2 spaces
-    if (charCode == 9) {
-
+    if (charCode === 9) {
       const active = document.activeElement
       const position = active.selectionStart
 
-      e.preventDefault()
+      event.preventDefault()
       active.value = active.value.substring(0, position)
-                     + '  '
-                     + active.value.substring(position, active.value.length)
+        + '  '
+        + active.value.substring(position, active.value.length)
 
       return active.setSelectionRange(position + 2, position + 2)
-
     }
-
   })
 
-  textarea.forEach(tag =>
-
-    tag.addEventListener('input', e => {
-
+  ;[html, css, js].forEach(tag =>
+    tag.addEventListener('input', event => {
       localStorage[tag.id] = tag.value
       autoHeight(tag)
 
       return preview()
-
     })
 
   )
 
   function preview() {
-
     share.href = `?html=${encode(html.value)}&css=${encode(css.value)}&js=${encode(js.value)}`
 
     return iframe.srcdoc = `
@@ -172,24 +134,18 @@
       <script type=module>${js.value}<\/script>
       <style>${css.value}</style>
     `
-
   }
 
   function encode(string) {
-
     return btoa(escape(encodeURIComponent(string)))
-
   }
 
 
   function decode(string) {
-
     return decodeURIComponent(unescape(atob(string)))
-
   }
 
   function autoHeight(tag) {
-
     tag.style.height = 'auto'
 
     return tag.style.height = getComputedStyle(tag).getPropertyValue('borderTop')
@@ -198,6 +154,33 @@
       + getComputedStyle(tag).getPropertyValue('paddingBottom')
       + getComputedStyle(tag).getPropertyValue('borderBottom')
       + 'px'
-
   }
 </script>
+
+<textarea
+  id=html
+  accesskey=h
+  placeholder=HTML
+  autocapitalize=off
+  autocorrect=off
+></textarea>
+
+<textarea
+  id=css
+  accesskey=c
+  placeholder=CSS
+  autocapitalize=off
+  autocorrect=off
+></textarea>
+
+<textarea
+  id=js
+  accesskey=j
+  placeholder=JavaScript
+  autocapitalize=off
+  autocorrect=off
+></textarea>
+
+<iframe></iframe>
+
+<a id=share href=# target=_blank>Share</a>
